@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/quotes */
 import * as z from "zod";
 
+import {db} from '../../db.ts'
+
 const Todo = z.object({
   content: z.string().min(1),
   done: z.boolean().default(false),

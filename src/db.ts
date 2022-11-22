@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const MONGO_URI = process.env.MONGO_URI;
+const { MONGO_URI }: any = process.env;
 
-expect const client = new MongoClient(MONGO_URI)
-expect const db = client.db()
+export const client = new MongoClient(MONGO_URI);
+export const db = client.db();

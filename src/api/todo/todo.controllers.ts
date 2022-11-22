@@ -1,22 +1,31 @@
 import { NextFunction, Request, Response } from 'express';
-import { InsertOneResult } from 'mongodb';
+import { ZodError } from 'zod';
 import { Todo, TodoWithId } from './todoModel';
 import { createNewTodo, findTodo } from './todoServices';
 
 export const findAll = async (req: Request, res: Response<TodoWithId[]>, next: NextFunction) => {
   try {
     const todos = await findTodo();
+    res.status(200);
     res.json(todos);
   } catch (err) {
     next(err);
   }
 };
 
-export const createTodo = async (req: Request<{}, InsertOneResult<Todo>, Todo>, res: Response<InsertOneResult<Todo>>, next: NextFunction) => {
+export const createTodo = async (req: Request<{}, TodoWithId, Todo>, res: Response<TodoWithId>, next: NextFunction) => {
   try {
-    const result = await createNewTodo(req.body);    
-    res.json(result);
-  } catch (err) {
-    next(err);
+    const insertResult = await createNewTodo(req.body);
+    if (!insertResult.acknowledged) throw new Error('Error inserting todo.');
+    res.status(201);
+    res.json({
+      _id: insertResult.insertedId,
+      ...req.body,
+    });
+  } catch (error) {
+    if (error instanceof ZodError) {
+      res.status(422);
+    }
+    next(error);
   }
 };

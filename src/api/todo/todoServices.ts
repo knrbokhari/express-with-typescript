@@ -8,7 +8,7 @@ export const findTodo = async () => {
 };
 
 export const createNewTodo = async (body: unknown) => {
-  const validatResult = await Todo.parse(body);
+  const validatResult = await Todo.parseAsync(body);
   const insertResult = await Todos.insertOne(validatResult);
   return insertResult;    
 };
